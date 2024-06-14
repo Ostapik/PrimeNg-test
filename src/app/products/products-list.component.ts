@@ -4,6 +4,7 @@ import { ProductApiService } from './product-api.service';
 import { PrimeNgImportsModule } from '../utils/prime-ng-imports';
 import { Product, Shop, StockStatus } from './product.type';
 import { shareReplay } from 'rxjs';
+import { AsyncPipe, CurrencyPipe, DecimalPipe } from '@angular/common';
 
 @Pipe({
   name: 'statusToSeverity',
@@ -23,7 +24,7 @@ export class StatusToSeverityPipe implements PipeTransform {
   selector: 'admin-products-list',
   templateUrl: 'products-list.component.html',
   standalone: true,
-  imports: [PrimeNgImportsModule, StatusToSeverityPipe],
+  imports: [PrimeNgImportsModule, StatusToSeverityPipe, AsyncPipe, CurrencyPipe, DecimalPipe],
   providers: [ProductApiService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
