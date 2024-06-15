@@ -1,10 +1,18 @@
 import { ChangeDetectionStrategy, Component, Pipe, PipeTransform, computed, inject, signal } from '@angular/core';
 import { Table } from 'primeng/table';
 import { ProductApiService } from './product-api.service';
-import { PrimeNgImportsModule } from '../utils/prime-ng-imports';
 import { Product, Shop, StockStatus } from './product.type';
 import { shareReplay } from 'rxjs';
 import { AsyncPipe, CurrencyPipe, DecimalPipe } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
 
 @Pipe({
   name: 'statusToSeverity',
@@ -24,7 +32,21 @@ export class StatusToSeverityPipe implements PipeTransform {
   selector: 'admin-products-list',
   templateUrl: 'products-list.component.html',
   standalone: true,
-  imports: [PrimeNgImportsModule, StatusToSeverityPipe, AsyncPipe, CurrencyPipe, DecimalPipe],
+  imports: [
+    StatusToSeverityPipe,
+    AsyncPipe,
+    CurrencyPipe,
+    DecimalPipe,
+    ButtonModule,
+    DropdownModule,
+    IconFieldModule,
+    InputIconModule,
+    InputSwitchModule,
+    InputTextModule,
+    MultiSelectModule,
+    TableModule,
+    TagModule
+  ],
   providers: [ProductApiService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
