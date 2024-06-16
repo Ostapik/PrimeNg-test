@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { Observable, map, of } from "rxjs";
-import { Product, Shop, ShopProduct } from "./product.type";
+import { Observable, map, of, tap } from "rxjs";
+import { CategoryFilter, Product, Shop, ShopProduct } from "./product.type";
 
 @Injectable()
 export class ProductApiService {
@@ -37,12 +37,18 @@ export class ProductApiService {
     ])
   }
 
-  fetchProducts(shops?: Shop[]): Observable<Product[]> {
+  fetchProducts(shops?: Shop[], categoryIds?: string[]): Observable<Product[]> {
     const shopIds = shops?.map(s => s.id)
-    return of<Product[]>(this.#products.map(product => ({
-      ...product,
-      dataPerShop: shops ? product.dataPerShop.filter(dps => shopIds.includes(dps.shop.id)) : product.dataPerShop
-    })))
+    return of<Product[]>(
+      this.#products.map(product => ({
+        ...product,
+        dataPerShop: shops ? product.dataPerShop.filter(dps => shopIds.includes(dps.shop.id)) : product.dataPerShop
+      })).filter(p => categoryIds?.length ? categoryIds.includes(p.category?.id) : true)
+    )
+  }
+
+  fetchCategories(): Observable<CategoryFilter[]> {
+    return of(this.#categories.map(cat => this.prepareCategoryData(cat))).pipe(tap(c => console.log(c)))
   }
 
   private convertToShopProducts(products: Product[]): ShopProduct[] {
@@ -50,6 +56,12 @@ export class ProductApiService {
       const { dataPerShop, ...rest } = product
       return product.dataPerShop.map(data => ({ ...rest, ...data }))
     }).flat()
+  }
+
+  private prepareCategoryData(category: CategoryFilter): CategoryFilter {
+    // const data: any[] = [category.key]
+    for (const child of category.children || []) child.data = child.key
+    return { ...category, data: category.key }
   }
 
   #products: Product[] = [
@@ -8054,4 +8066,899 @@ export class ProductApiService {
       ]
     }
   ].map((p: Product) => ({ ...p, stock: p.dataPerShop.reduce((s, cur) => s + cur.stock, 0) }))
+
+  #categories: CategoryFilter[] = [
+    {
+      key: "5f5b48febe16900012db04fd",
+      label: "Divers",
+      children: [
+        {
+          key: "5f5b49020d244100129fb3a1",
+          label: "Recette"
+        },
+        {
+          key: "5f5b49080d244100129fb3a7",
+          label: "Digital"
+        },
+        {
+          key: "5f5b49098f0e0200115e7696",
+          label: "Notes de frais"
+        },
+        {
+          key: "5f5b490e0d244100129fb3ab",
+          label: "Transport a l' Achat"
+        },
+        {
+          key: "63935a32067190001c362a2d",
+          label: "Noël 2022"
+        }
+      ]
+    },
+    {
+      key: "5f5b49018f0e0200115e768d",
+      label: "Credit"
+    },
+    {
+      key: "6272a607686f29001ab6eb96",
+      label: "F&L",
+      children: [
+        {
+          key: "5d8352f791f12500114b0132",
+          label: "Fruits",
+          children: [
+            {
+              key: "5f5b49048f0e0200115e7693",
+              label: "Fruits a coques"
+            },
+            {
+              key: "5f5b49051e0f2f00112cf09c",
+              label: "Fruits a noyau",
+              children: [
+                {
+                  key: "647db2d764b6550013f9d8d2",
+                  label: "Avocats"
+                },
+                {
+                  key: "647db2e3cfc0cf0013dfe6c7",
+                  label: "Pêches"
+                },
+                {
+                  key: "647db2f164b6550013f9db0e",
+                  label: "Nectarines"
+                },
+                {
+                  key: "647db2fa5d220700135946d1",
+                  label: "Abricots"
+                },
+                {
+                  key: "647db301cfc0cf0013dfe83d",
+                  label: "Cerises"
+                },
+                {
+                  key: "647db30e5d22070013594a2a",
+                  label: "Autres fruits à noyau"
+                },
+                {
+                  key: "647db3185d2207001359500a",
+                  label: "Prunes"
+                }
+              ]
+            },
+            {
+              key: "5f5b49061e0f2f00112cf09d",
+              label: "Paniers fruits"
+            },
+            {
+              key: "5f5b49071e0f2f00112cf09e",
+              label: "Autres fruits a pepin",
+              children: [
+                {
+                  key: "647db4f564b6550013fa205e",
+                  label: "Melon"
+                }
+              ]
+            },
+            {
+              key: "5f5b490abe16900012db0504",
+              label: "Fruits exotiques"
+            },
+            {
+              key: "5f5b490c7b9eaf00111db60c",
+              label: "Agrumes",
+              children: [
+                {
+                  key: "63ff885df2275300154bde34",
+                  label: "Citrons"
+                },
+                {
+                  key: "63ff8868d07cd70013cceb30",
+                  label: "Oranges"
+                },
+                {
+                  key: "63ff8871d07cd70013cceb3f",
+                  label: "Autres Agrumes"
+                },
+                {
+                  key: "63ff8879f2275300154be145",
+                  label: "Clémentines"
+                },
+                {
+                  key: "63ff8ac6d07cd70013cd2475",
+                  label: "Mandarines"
+                },
+                {
+                  key: "63ff8ad8d07cd70013cd27bb",
+                  label: "Pomelos"
+                }
+              ]
+            },
+            {
+              key: "5f5b49138f0e0200115e769e",
+              label: "Petits fruits",
+              children: [
+                {
+                  key: "64807fc56216960013c1812b",
+                  label: "Fraises"
+                }
+              ]
+            },
+            {
+              key: "61447a16d794cc001966ddad",
+              label: "Pommes"
+            },
+            {
+              key: "61447a2c0df21600193777ed",
+              label: "Poires"
+            },
+            {
+              key: "61447a3f734485001a278f35",
+              label: "Raisins"
+            },
+            {
+              key: "636282edf9648b00194abf33",
+              label: "Fruits"
+            },
+            {
+              key: "655b1c193ac48e0012a62706",
+              label: "Fruits secs"
+            }
+          ]
+        },
+        {
+          key: "5d8352fd91f12500114b0133",
+          label: "Legumes",
+          children: [
+            {
+              key: "5f5b49021e0f2f00112cf098",
+              label: "Legumes Fruits",
+              children: [
+                {
+                  key: "647db591cfc0cf0013e00b0e",
+                  label: "Tomates"
+                },
+                {
+                  key: "649d32a6088ff4001320f35e",
+                  label: "Courgette"
+                },
+                {
+                  key: "649d76242de08100147b3608",
+                  label: "Ratatouille"
+                }
+              ]
+            },
+            {
+              key: "5f5b49038f0e0200115e7691",
+              label: "Cucurbitacees"
+            },
+            {
+              key: "5f5b49051e0f2f00112cf09b",
+              label: "Legumes racines",
+              children: [
+                {
+                  key: "651eb6e64608fa0013d0f32c",
+                  label: "Carottes"
+                },
+                {
+                  key: "651eb6f6ae7c520012ebaabb",
+                  label: "Radis"
+                },
+                {
+                  key: "651eb70aae7c520012ebab05",
+                  label: "Navets"
+                },
+                {
+                  key: "651eb7287ecc6500132f6c62",
+                  label: "Betteraves"
+                },
+                {
+                  key: "651eb87a4608fa0013d0f987",
+                  label: "Pomme de Terre"
+                },
+                {
+                  key: "6544c73feae768001499448c",
+                  label: "Patates douces"
+                }
+              ]
+            },
+            {
+              key: "5f5b49057b9eaf00111db609",
+              label: "Légumineuses"
+            },
+            {
+              key: "5f5b49060d244100129fb3a3",
+              label: "Bulbes",
+              children: [
+                {
+                  key: "651eb6897ecc6500132f6a27",
+                  label: "Bulbes en botte"
+                }
+              ]
+            },
+            {
+              key: "5f5b49100d244100129fb3ad",
+              label: "Champignons"
+            },
+            {
+              key: "5f5b4910be16900012db050a",
+              label: "Paniers legumes"
+            },
+            {
+              key: "5f5b49118f0e0200115e769c",
+              label: "Legumes Tiges"
+            },
+            {
+              key: "5f5b49140d244100129fb3af",
+              label: "Fines Herbes"
+            },
+            {
+              key: "5f5b49140d244100129fb3b0",
+              label: "Legume feuille"
+            },
+            {
+              key: "5f5b49148f0e0200115e769f",
+              label: "Tubercules"
+            },
+            {
+              key: "5f5b49148f0e0200115e76a0",
+              label: "Legumes Fleurs"
+            },
+            {
+              key: "5f5b49158f0e0200115e76a1",
+              label: "Legumes Tiges"
+            },
+            {
+              key: "61447a05280ae8001a6ebd98",
+              label: "Tomates"
+            },
+            {
+              key: "61447a53280ae8001a6ebd99",
+              label: "Salades"
+            },
+            {
+              key: "6442b20323907e00156241e4",
+              label: "Légumes - Atelier"
+            },
+            {
+              key: "649eee9370246000137b60e9",
+              label: "Choux"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      key: "6273d4a4f90e67001f9ad158",
+      label: "Frais",
+      children: [
+        {
+          key: "5f5b48f37b9eaf00111db603",
+          label: "Charcuterie",
+          children: [
+            {
+              key: "5f5b48f30d244100129fb397",
+              label: "Choucroute"
+            },
+            {
+              key: "5f5b48fa8f0e0200115e7685",
+              label: "Poitrine"
+            },
+            {
+              key: "5f5b48fb7b9eaf00111db606",
+              label: "Pate terrine"
+            },
+            {
+              key: "5f5b49060d244100129fb3a4",
+              label: "Saucisse"
+            },
+            {
+              key: "5f5b49078f0e0200115e7694",
+              label: "Jambon Salaisons Decoupe"
+            },
+            {
+              key: "5f9ab410ef12800012479b5f",
+              label: "Charcuterie viande de chasse"
+            },
+            {
+              key: "6226146187e0ca001b2abafd",
+              label: "Saucissons et saucisses seches"
+            },
+            {
+              key: "622a4ddcd1c9940013ff9aaf",
+              label: "saucisson"
+            },
+            {
+              key: "622f509da9ce7e00135f09a8",
+              label: "Saucissons et saucisses seches"
+            }
+          ]
+        },
+        {
+          key: "5f5b48f41e0f2f00112cf090",
+          label: "Boucherie",
+          children: [
+            {
+              key: "5f5b48f41e0f2f00112cf091",
+              label: "Poulet"
+            },
+            {
+              key: "5f5b48f4be16900012db04f5",
+              label: "Oeuf"
+            },
+            {
+              key: "5f5b48f50d244100129fb398",
+              label: "Gibier"
+            },
+            {
+              key: "5f5b48f67b9eaf00111db604",
+              label: "Agneau"
+            },
+            {
+              key: "5f5b48f6be16900012db04f8",
+              label: "Veau"
+            },
+            {
+              key: "5f5b48f98f0e0200115e7683",
+              label: "Porc"
+            },
+            {
+              key: "5f5b48f98f0e0200115e7684",
+              label: "Boeuf",
+              children: [
+                {
+                  key: "650b05eb644482001431684c",
+                  label: "Piece du boucher"
+                },
+                {
+                  key: "650b06620bbd9700121b6e8c",
+                  label: "Morceau 2 cat"
+                },
+                {
+                  key: "650b06a70bbd9700121b6ef6",
+                  label: "Morceau 1 cat"
+                },
+                {
+                  key: "650b0a280bbd9700121b73f6",
+                  label: "abas"
+                },
+                {
+                  key: "650b101e6444820014317574",
+                  label: "Charcuterie de boeuf"
+                }
+              ]
+            },
+            {
+              key: "60d0c3d79897d80017817467",
+              label: "Canard"
+            },
+            {
+              key: "60d0c4643467ef00185e24bd",
+              label: "Dinde"
+            }
+          ]
+        },
+        {
+          key: "5f5b48f71e0f2f00112cf092",
+          label: "Boulangerie",
+          children: [
+            {
+              key: "5f5b48f70d244100129fb399",
+              label: "Galette des rois"
+            },
+            {
+              key: "5f5b48f70d244100129fb39a",
+              label: "Pain a la coupe"
+            },
+            {
+              key: "5f5b49160d244100129fb3b1",
+              label: "Pain tranche"
+            },
+            {
+              key: "60c3421cbeb9e500110b07ab",
+              label: "Pain entier"
+            },
+            {
+              key: "654b882beae7680014a667bc",
+              label: "Patisserie"
+            },
+            {
+              key: "6581b1be17e1e20012f221f0",
+              label: "Baguettes et flutes"
+            },
+            {
+              key: "6581b29417e1e20012f222b6",
+              label: "Pains festifs"
+            }
+          ]
+        },
+        {
+          key: "5f5b48f88f0e0200115e7682",
+          label: "Cremerie",
+          children: [
+            {
+              key: "5f5b48f81e0f2f00112cf093",
+              label: "Vache",
+              children: [
+                {
+                  key: "5f5b48fc8f0e0200115e7688",
+                  label: "Fromage blanc - faisselle"
+                },
+                {
+                  key: "5f5b49008f0e0200115e768c",
+                  label: "Desserts lactes - autres"
+                },
+                {
+                  key: "652fac02fb708c001371d742",
+                  label: "nature"
+                },
+                {
+                  key: "655f538fcc968d0013f168df",
+                  label: "Yaourt nature"
+                },
+                {
+                  key: "65606889cc968d0013f45300",
+                  label: "Fromage blanc"
+                },
+                {
+                  key: "656069218f574a0012ee27a7",
+                  label: "Creme"
+                },
+                {
+                  key: "656069938f574a0012ee292b",
+                  label: "Yaourt aux Fruits"
+                },
+                {
+                  key: "656069c03ac48e0012b18b64",
+                  label: "Yaourt a boire"
+                },
+                {
+                  key: "65606a128f574a0012ee2b1c",
+                  label: "Faisselle"
+                },
+                {
+                  key: "65606ab58f574a0012ee2c6e",
+                  label: "Lait"
+                }
+              ]
+            },
+            {
+              key: "5f5b48fb0d244100129fb39e",
+              label: "oeuf"
+            },
+            {
+              key: "5f5b48fb8f0e0200115e7687",
+              label: "Chevre"
+            },
+            {
+              key: "5f5b48fc0d244100129fb39f",
+              label: "Beurre et Creme",
+              children: [
+                {
+                  key: "64ae7753a2f8d80014e69ed0",
+                  label: "Beurre"
+                },
+                {
+                  key: "65606f35cc968d0013f46461",
+                  label: "Beurre"
+                }
+              ]
+            },
+            {
+              key: "5f5b48fdbe16900012db04fb",
+              label: "Brebis"
+            },
+            {
+              key: "5f5b48fe8f0e0200115e7689",
+              label: "Glace et Sorbet"
+            },
+            {
+              key: "5f5b490dbe16900012db0507",
+              label: "produits élaborés"
+            }
+          ]
+        },
+        {
+          key: "5f5b490abe16900012db0503",
+          label: "Fromages",
+          children: [
+            {
+              key: "5f5b490a8f0e0200115e7697",
+              label: "From. Chevre"
+            },
+            {
+              key: "5f5b490f1e0f2f00112cf0a4",
+              label: "From. Vache",
+              children: [
+                {
+                  key: "651a85cf164bd0001260a5d7",
+                  label: "Comte"
+                },
+                {
+                  key: "651a86ac164bd0001260a6f6",
+                  label: "Raclette"
+                }
+              ]
+            },
+            {
+              key: "5f5b490fbe16900012db0509",
+              label: "From. Brebis"
+            },
+            {
+              key: "63693e72185ada001a49155d",
+              label: "Fromages Italiens",
+              children: [
+                {
+                  key: "658017c417e1e20012eb5a1d",
+                  label: "Mozzarella"
+                },
+                {
+                  key: "658017e517e1e20012eb5c53",
+                  label: "Ricotta"
+                },
+                {
+                  key: "658018052754150014eba986",
+                  label: "Burrata"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          key: "5f5b490b8f0e0200115e7698",
+          label: "Maree",
+          children: [
+            {
+              key: "5f5b490b0d244100129fb3a9",
+              label: "Poisson fume"
+            },
+            {
+              key: "5f5b49158f0e0200115e76a2",
+              label: "Coquillage Crustace"
+            },
+            {
+              key: "5f5b4915be16900012db050b",
+              label: "Poisson frais"
+            },
+            {
+              key: "5f5b4916be16900012db050c",
+              label: "Algue"
+            }
+          ]
+        },
+        {
+          key: "654b5d70351adf0013698bc7",
+          label: "Traiteur",
+          children: [
+            {
+              key: "647db6d31aed98001448d7ec",
+              label: "Sauces fraiches"
+            },
+            {
+              key: "654b5d9d64f422001462289d",
+              label: "Substituts végétaux"
+            },
+            {
+              key: "654b5e7feae7680014a5d416",
+              label: "Pates fraiches"
+            },
+            {
+              key: "654b5ea0351adf0013698d9b",
+              label: "Galettes et crêpes"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      key: "6273d4cc47e3e0001a5600ba",
+      label: "Sec",
+      children: [
+        {
+          key: "5f5b48f5be16900012db04f6",
+          label: "Boissons",
+          children: [
+            {
+              key: "5f5b48f58f0e0200115e7680",
+              label: "Sirop"
+            },
+            {
+              key: "5f5b48f5be16900012db04f7",
+              label: "Jus de fruit"
+            },
+            {
+              key: "5f5b48f6be16900012db04f9",
+              label: "Cidre"
+            },
+            {
+              key: "5f5b48f87b9eaf00111db605",
+              label: "Alcool"
+            },
+            {
+              key: "5f5b48f90d244100129fb39b",
+              label: "Biere"
+            },
+            {
+              key: "6298cf763da807001ba53524",
+              label: "Boissons végétales"
+            }
+          ]
+        },
+        {
+          key: "5f5b48fa0d244100129fb39c",
+          label: "Cave",
+          children: [
+            {
+              key: "5f5b48ff0d244100129fb3a0",
+              label: "Vin rouge"
+            },
+            {
+              key: "5f5b49028f0e0200115e7690",
+              label: "Vin rosé"
+            },
+            {
+              key: "5f5b49051e0f2f00112cf09a",
+              label: "Vin pétillant"
+            },
+            {
+              key: "5f5b49078f0e0200115e7695",
+              label: "Vins blancs2"
+            },
+            {
+              key: "611f9cb49a8094001357bafc",
+              label: "Vin blanc"
+            }
+          ]
+        },
+        {
+          key: "5f5b48fa1e0f2f00112cf094",
+          label: "Epicerie sucree",
+          children: [
+            {
+              key: "5f5b49080d244100129fb3a6",
+              label: "Farine"
+            },
+            {
+              key: "5f5b49081e0f2f00112cf09f",
+              label: "Fruit sec & graine & noix"
+            },
+            {
+              key: "5f5b490d1e0f2f00112cf0a3",
+              label: "Biscuit"
+            },
+            {
+              key: "5f5b490d8f0e0200115e769a",
+              label: "The & cafe & tisane"
+            },
+            {
+              key: "5f5b490e0d244100129fb3aa",
+              label: "Compote & puree"
+            },
+            {
+              key: "5f5b490e7b9eaf00111db60e",
+              label: "Confiture - Chutney - Coulis"
+            },
+            {
+              key: "5f5b490e8f0e0200115e769b",
+              label: "Gateaux & Pain d'epices"
+            },
+            {
+              key: "5f5b49168f0e0200115e76a3",
+              label: "Sucre & confiserie & chocolat"
+            },
+            {
+              key: "62b9da7e903ba1001ad15a2a",
+              label: "Miel"
+            },
+            {
+              key: "663a32152add2f0014567704",
+              label: "Pop corn"
+            }
+          ]
+        },
+        {
+          key: "5f5b49007b9eaf00111db607",
+          label: "Epicerie salee",
+          children: [
+            {
+              key: "5f5b4900be16900012db04ff",
+              label: "Soupe"
+            },
+            {
+              key: "5f5b49017b9eaf00111db608",
+              label: "Pate Rillettes et Foie Gras"
+            },
+            {
+              key: "5f5b49018f0e0200115e768f",
+              label: "Legumineuse"
+            },
+            {
+              key: "5f5b4906be16900012db0500",
+              label: "Sauce",
+              children: [
+                {
+                  key: "6638e8332add2f0014556e22",
+                  label: "Sauces tomate"
+                }
+              ]
+            },
+            {
+              key: "5f5b49070d244100129fb3a5",
+              label: "Olive"
+            },
+            {
+              key: "5f5b490a7b9eaf00111db60a",
+              label: "Conserve & plat prepare"
+            },
+            {
+              key: "5f5b490b7b9eaf00111db60b",
+              label: "Huile & vinaigre",
+              children: [
+                {
+                  key: "63ff8612f2275300154ba7ab",
+                  label: "Huile Colza"
+                },
+                {
+                  key: "63ff862c14bf9e00135a2f9b",
+                  label: "Huile Olive"
+                },
+                {
+                  key: "63ff8647d07cd70013ccb23b",
+                  label: "Vinaigre"
+                },
+                {
+                  key: "63ff86fdd07cd70013ccc806",
+                  label: "Huile Tournesol"
+                },
+                {
+                  key: "63ff87d1f2275300154bd28a",
+                  label: "Autres huiles"
+                }
+              ]
+            },
+            {
+              key: "5f5b490bbe16900012db0505",
+              label: "Conserve poisson"
+            },
+            {
+              key: "5f5b490c1e0f2f00112cf0a2",
+              label: "Blinis"
+            },
+            {
+              key: "5f5b490f7b9eaf00111db60f",
+              label: "Pates riz",
+              children: [
+                {
+                  key: "6638e7e2be7a650013142aff",
+                  label: "Pates"
+                }
+              ]
+            },
+            {
+              key: "5f5b49130d244100129fb3ae",
+              label: "Legume seche"
+            },
+            {
+              key: "5f5b49138f0e0200115e769d",
+              label: "Epice & condiment"
+            },
+            {
+              key: "5f5b4916be16900012db050d",
+              label: "Vrac",
+              children: [
+                {
+                  key: "62558c9ea5447a00146bc759",
+                  label: "Vrac"
+                }
+              ]
+            },
+            {
+              key: "61c333f1f3d8d1001a823e7b",
+              label: "Céréales et graines"
+            },
+            {
+              key: "623c3f206c2e47001294d427",
+              label: "Biscuits sales"
+            },
+            {
+              key: "62c563c25c81420014afcbca",
+              label: "Légumes transformés"
+            },
+            {
+              key: "663a31e064aa85001330f7fd",
+              label: "Chips"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      key: "6273d50d686f29001ab9a169",
+      label: "FM",
+      children: [
+        {
+          key: "5f5b48f78f0e0200115e7681",
+          label: "Cuisine fait maison",
+          children: [
+            {
+              key: "5f5b48f7be16900012db04fa",
+              label: "Sandwichs/Quiches"
+            },
+            {
+              key: "5f5b48fa8f0e0200115e7686",
+              label: "Plats Cuisinés"
+            },
+            {
+              key: "5f5b48fdbe16900012db04fc",
+              label: "Entrées"
+            },
+            {
+              key: "5f5b48ff1e0f2f00112cf096",
+              label: "Dessert (obsolète)"
+            },
+            {
+              key: "5f5b48ff8f0e0200115e768b",
+              label: "Box du Jour"
+            },
+            {
+              key: "5f5b4900be16900012db04fe",
+              label: "Menu et Midi TVA10%"
+            },
+            {
+              key: "5f5b49030d244100129fb3a2",
+              label: "Soupes"
+            },
+            {
+              key: "5f5b49038f0e0200115e7692",
+              label: "Pain"
+            },
+            {
+              key: "5f5b490fbe16900012db0508",
+              label: "Salades composées"
+            },
+            {
+              key: "5fdc891bef8ca50018cbd2fa",
+              label: "Dessert"
+            },
+            {
+              key: "6047f03c670be800125b131c",
+              label: "Gratins/ flans"
+            },
+            {
+              key: "648c458f640c3b0014d33ca8",
+              label: "Autres"
+            }
+          ]
+        },
+        {
+          key: "60d0c0f69897d80017817466",
+          label: "Ingrédients Fait Maison",
+          children: [
+            {
+              key: "5fad7eb530dc260011d36b9e",
+              label: "Ingrédients Cuisine"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

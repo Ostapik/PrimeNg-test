@@ -5,6 +5,13 @@ export type Shop = {
 
 export type StockStatus = 'INSTOCK' | 'OUTOFSTOCK' | 'LOWSTOCK'
 
+export type CategoryFilter = {
+  key: string,
+  label: string,
+  data?: any,
+  children?: CategoryFilter[]
+}
+
 export type Product = {
   id: string,
   name: string,

@@ -58,11 +58,22 @@
           />
         </th>
         <th>
-          <p-columnFilter
+          <!-- <p-columnFilter
             type="text"
             field="category.name"
             placeholder="Search by category"
             ariaLabel="Filter Category"
+          /> -->
+          <!--selectionMode="multiple"-->
+          <p-treeSelect
+            class="md:w-20rem w-full"
+            containerStyleClass="w-full"
+            [options]="categories$ | async"
+            placeholder="Select Item"
+            [filter]="true"
+            [(ngModel)]="selectedCategories"
+            [filterInputAutoFocus]="true"
+            (ngModelChange)="filterByCategories($event)"
           />
         </th>
         <th></th>
@@ -163,7 +174,7 @@
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="5">No products found.</td>
+        <td colspan="5" [style.height]="'500px'">No products found.</td>
       </tr>
     </ng-template>
   </p-table>

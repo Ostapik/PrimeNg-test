@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Pipe, PipeTransform, computed, inject, signal } from '@angular/core';
 import { Table } from 'primeng/table';
 import { ProductApiService } from './product-api.service';
-import { Product, Shop, StockStatus } from './product.type';
+import { CategoryFilter, Product, Shop, StockStatus } from './product.type';
 import { shareReplay } from 'rxjs';
 import { AsyncPipe, CurrencyPipe, DecimalPipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -13,6 +13,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { TreeSelectModule } from 'primeng/treeselect';
+import { FormsModule } from '@angular/forms';
 
 @Pipe({
   name: 'statusToSeverity',
@@ -45,18 +47,25 @@ export class StatusToSeverityPipe implements PipeTransform {
     InputTextModule,
     MultiSelectModule,
     TableModule,
-    TagModule
+    TagModule,
+    TreeSelectModule,
+    FormsModule
   ],
   providers: [ProductApiService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsListComponent {
   #productApi = inject(ProductApiService)
-  products$ = this.#productApi.fetchProducts().pipe(shareReplay(1))
+  #shopFilters: Shop[]
+  #categoryFilters: string[]
+
+  products$ = this.#productApi.fetchProducts().pipe(shareReplay({ bufferSize: 1, refCount: true }))
+  categories$ = this.#productApi.fetchCategories().pipe(shareReplay({ bufferSize: 1, refCount: true }))
   products = signal<Product[]>(null)
   loading = computed(() => !this.products())
   shops$ = this.#productApi.fetchShops()
   expandedRows = signal({});
+  selectedCategories: CategoryFilter[] = []
 
   constructor() {
     this.#loadProducts()
@@ -81,10 +90,24 @@ export class ProductsListComponent {
   }
 
   filterByShops(shops: Shop[]) {
-    this.#loadProducts(shops)
+    this.#shopFilters = shops
+    this.#loadProducts()
   }
 
-  #loadProducts(shops?: Shop[]) {
-    this.#productApi.fetchProducts(shops).subscribe(products => this.products.set(products))
+  filterByCategories(values: CategoryFilter) {
+    // const categoryIds: string[] = values.map(val => this.#getCategoryKeys(val)).flat()
+    // this.#categoryFilters = [...new Set(categoryIds)]
+    this.#categoryFilters = values && [...new Set(this.#getCategoryKeys(values))]
+    this.#loadProducts()
+  }
+
+  #getCategoryKeys(cat: CategoryFilter): string[] {
+    let res = [cat.key]
+    for (const child of (cat.children || [])) res = res.concat(this.#getCategoryKeys(child))
+    return res
+  }
+
+  #loadProducts() {
+    this.#productApi.fetchProducts(this.#shopFilters, this.#categoryFilters).subscribe(products => this.products.set(products))
   }
 }
