@@ -76,7 +76,9 @@
             (ngModelChange)="filterByCategories($event)"
           />
         </th>
-        <th></th>
+        <th>
+          <p-columnFilter type="boolean" field="sellable"></p-columnFilter>
+        </th>
         <th>
           <p-columnFilter
             field="shop"
@@ -129,6 +131,7 @@
             </ng-template>
           </p-columnFilter>
         </th>
+        <th></th>
       </tr>
     </ng-template>
     <ng-template
@@ -153,6 +156,9 @@
             [value]="product.inventoryStatus"
             [severity]="product.inventoryStatus | statusToSeverity"
           />
+        </td>
+        <td style="text-align: center">
+          <p-button [text]="true" icon="pi pi-pencil"/>
         </td>
       </tr>
     </ng-template>
