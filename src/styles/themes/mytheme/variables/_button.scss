@@ -80,7 +80,7 @@ $plainButtonActiveBgColor:#dee2e6;
 
 /// Background of a secondary button
 /// @group button
-$secondaryButtonBg: #607D8B;
+$secondaryButtonBg: $primaryDarkColor;
 
 /// Text color of a secondary button
 /// @group button
@@ -88,7 +88,7 @@ $secondaryButtonTextColor: #ffffff;
 
 /// Border of a secondary button
 /// @group button
-$secondaryButtonBorder: 1px solid #607D8B;
+$secondaryButtonBorder: 1px solid $primaryDarkColor;
 
 /// Background of a secondary button in hover state
 /// @group button
@@ -160,7 +160,7 @@ $infoButtonFocusShadow: 0 0 0 0.2rem lighten($infoButtonBg, 35%);
 
 /// Background of a success button
 /// @group button
-$successButtonBg: #4CAF50;
+$successButtonBg: $primaryColor;
 
 /// Text color of a success button
 /// @group button
@@ -168,7 +168,7 @@ $successButtonTextColor: #ffffff;
 
 /// Border of a success button
 /// @group button
-$successButtonBorder: 1px solid #4CAF50;
+$successButtonBorder: 1px solid $primaryColor;
 
 /// Background of a success button in hover state
 /// @group button
@@ -200,7 +200,7 @@ $successButtonFocusShadow: 0 0 0 0.2rem lighten($successButtonBg, 35%);
 
 /// Background of a warning button
 /// @group button
-$warningButtonBg: #FFC107;
+$warningButtonBg: $warningColor;
 
 /// Text color of a warning button
 /// @group button
@@ -208,7 +208,7 @@ $warningButtonTextColor: $textColor;
 
 /// Border of a warning button
 /// @group button
-$warningButtonBorder: 1px solid #FFC107;
+$warningButtonBorder: 1px solid $warningColor;
 
 /// Background of a warning button in hover state
 /// @group button
@@ -240,7 +240,7 @@ $warningButtonFocusShadow: 0 0 0 0.2rem lighten($warningButtonBg, 35%);
 
 /// Background of a help button
 /// @group button
-$helpButtonBg:#9C27B0;
+$helpButtonBg:$purpleColor;
 
 /// Text color of a help button
 /// @group button
@@ -248,7 +248,7 @@ $helpButtonTextColor:#ffffff;
 
 /// Border of a help button
 /// @group button
-$helpButtonBorder:1px solid #9C27B0;
+$helpButtonBorder:1px solid $purpleColor;
 
 /// Background of a help help in hover state
 /// @group button
@@ -280,7 +280,7 @@ $helpButtonFocusShadow:0 0 0 0.2rem #CE93D8;
 
 /// Background of a danger button
 /// @group button
-$dangerButtonBg: #f44336;
+$dangerButtonBg: $dangerColor;
 
 /// Text color of a danger button
 /// @group button
@@ -288,7 +288,7 @@ $dangerButtonTextColor: #ffffff;
 
 /// Border of a danger button
 /// @group button
-$dangerButtonBorder: 1px solid #f44336;
+$dangerButtonBorder: 1px solid $dangerColor;
 
 /// Background of a danger button in hover state
 /// @group button

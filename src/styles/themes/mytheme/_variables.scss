@@ -1,21 +1,27 @@
 // Theme Specific Variables
-$primaryColor: #2196F3;
-$primaryDarkColor: #1E88E5;
-$primaryDarkerColor: #1976D2;
+$primaryColor: #00D1B2;
+$primaryDarkColor: #00947E;
+$primaryDarkerColor: #00947E;
 $primaryTextColor: #ffffff;
+$warningColor: #FFE08A;
+$dangerColor: #F14668;
+$blueColor: #485FC7;
+$purpleColor: #B86BFF;
 
 $colors: (
-    "blue": #2196F3,
-    "green": #4caf50,
-    "yellow": #FBC02D,
+    "blue": $blueColor,
+    "green": $primaryColor,
+    "green-light": #EBFFFC,
+    "yellow": $warningColor,
     "cyan": #00BCD4,
     "pink": #E91E63,
     "indigo": #3F51B5,
     "teal": #009688,
     "orange": #F57C00,
-    "bluegray": #607D8B,
-    "purple": #9C27B0,
-    "red": #FF4032,
+    "bluegray": $primaryDarkColor,
+    "purple": $purpleColor,
+    "red": $dangerColor,
+    "danger-light": #FEECF0,
     "primary": $primaryColor
 );
 
@@ -42,7 +48,7 @@ $colors: (
     --surface-f:#ffffff;
     --text-color:#495057;
     --text-color-secondary:#6c757d;
-    --primary-color:#2196F3;
+    --primary-color:#00D1B2;
     --primary-color-text:#ffffff;
     --surface-0: #ffffff;
     --surface-50: #FAFAFA;

@@ -1,0 +1,86 @@
+<div class="grid">
+  <form [formGroup]="form" class="col-fixed" style="width:300px">
+    <div class="p-card flex flex-column gap-2 p-fluid p-3 h-full">
+      <div class="flex-auto">
+        <label class="mb-2 font-bold block" for="product">Produit analysé</label>
+        <p-autoComplete
+          id="product"
+          field="name"
+          formControlName="product"
+          (completeMethod)="searchProducts($event)"
+          [suggestions]="productSuggestions()"
+        />
+      </div>
+      <div class="flex-auto">
+        <label class="mb-2 font-bold block" for="product">Période d’analyse</label>
+        <p-calendar 
+          id="dates"
+          [iconDisplay]="'input'" 
+          [showIcon]="true"
+          [maxDate]="today()"
+          formControlName="dates"
+          selectionMode="range" 
+          [readonlyInput]="true" />
+      </div>
+      <div class="grid">
+        <div class="col">
+          <p-dropdown 
+            [options]="periodValues()" 
+            formControlName="period"
+            optionLabel="name" />
+        </div>
+        <div class="col">
+          <p-dropdown 
+            [options]="byPeriodValues()" 
+            formControlName="byPeriod"
+            optionLabel="name" />
+        </div>
+      </div>
+    </div>
+  </form>
+  
+  <div class="col">
+    <p-card header="Données clefs" class="h-full">
+      <div class="grid">
+        <div class="col">
+          <p-chart type="bar" [data]="datasetsData()" [options]="chartOptions()" />
+        </div>
+
+        <div class="col">
+          <div class="grid">
+            <div class="col">
+              <div class="p-card gap-2 p-3 h-full">
+                <div class="font-bold">Ventes</div>
+                <div>{{ salesTotal() | number : '1.0-2' }} {{ unit() }}</div>
+                <div>{{ salesByDay() | number : '1.0-2' }}/j</div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="p-card gap-2 p-3 h-full">
+                <div class="font-bold">Pastillage</div>
+                <div>{{ giftsTotal() | number : '1.0-2' }} {{ unit() }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="col">
+              <div class="p-card gap-2 p-3 h-full">
+                <div class="font-bold">Conso cuisine</div>
+                <div>{{ consoTotal() | number : '1.0-2' }} {{ unit() }}</div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="p-card gap-2 p-3 h-full">
+                <div class="font-bold">Casse</div>
+                <div>{{ trashTotal() | number : '1.0-2' }} {{ unit() }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+</div>
