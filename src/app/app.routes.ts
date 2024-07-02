@@ -4,7 +4,8 @@ import { PurchaseComponent } from './purchase/purchase.component';
 
 export const routes: Routes = [{
   path: '',
-  component: ProductsListComponent
+  // component: ProductsListComponent
+  loadChildren: () => import('./purchase/purchase.routes').then(mod => mod.PURCHASE_ROUTES)
 }, {
   path: 'commande',
   loadChildren: () => import('./purchase/purchase.routes').then(mod => mod.PURCHASE_ROUTES)
