@@ -1,1 +1,43 @@
-Projections
+<div class="grid">
+  <form [formGroup]="form" class="col-fixed" style="width:300px">
+    <div class="p-card flex flex-column gap-2 p-fluid p-3 h-full">
+      <div class="flex-auto">
+        <label class="mb-2 font-bold block" for="product">Produit analysé</label>
+        <p-dropdown 
+          [options]="products()"
+          optionLabel="name" 
+          formControlName="product"
+          [filter]="true"
+          filterBy="name"></p-dropdown>
+      </div>
+      <div class="flex-auto">
+        <label class="mb-2 font-bold block" for="goal">Appliquer un objectif</label>
+        <p-dropdown 
+          [options]="[]" 
+          formControlName="goal"
+          optionLabel="name" />
+      </div>
+      <div class="flex-auto">
+        <label class="mb-2 font-bold block" for="model">Prévision des ventes</label>
+        <p-dropdown 
+          [options]="[]" 
+          formControlName="model"
+          optionLabel="name" />
+      </div>
+    </div>
+  </form>
+  
+  <div class="col">
+    <p-card header="Données clefs" class="h-full">
+      <div class="grid">
+        <div class="col">
+          <!-- <p-chart type="bar" [data]="datasetsData()" [options]="chartOptions()" /> -->
+        </div>
+
+        <div class="col">
+
+        </div>
+      </div>
+    </p-card>
+  </div>
+</div>

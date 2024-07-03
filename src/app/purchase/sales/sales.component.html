@@ -4,14 +4,14 @@
       <div class="flex-auto">
         <label class="mb-2 font-bold block" for="product">Produit analysé</label>
         <p-dropdown 
-          [options]="productSuggestions()"
+          [options]="products()"
           optionLabel="name" 
           formControlName="product"
           [filter]="true"
           filterBy="name"></p-dropdown>
       </div>
       <div class="flex-auto">
-        <label class="mb-2 font-bold block" for="product">Période d’analyse</label>
+        <label class="mb-2 font-bold block" for="dates">Période d’analyse</label>
         <p-calendar 
           id="dates"
           [iconDisplay]="'input'" 
@@ -41,8 +41,9 @@
   <div class="col">
     <p-card header="Données clefs" class="h-full">
       <div class="grid">
-        <div class="col">
+        <div class="col relative">
           <p-chart type="bar" [data]="datasetsData()" [options]="chartOptions()" />
+          <div #breakagesCnt class="breakages-info absolute"></div>
         </div>
 
         <div class="col">

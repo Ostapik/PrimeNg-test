@@ -1,20 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Renderer2, ViewEncapsulation, computed, inject, signal, viewChild } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { SalesApiService } from './sales-api.service';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-// import { AutoCompleteModule } from 'primeng/autocomplete';
 import { BehaviorSubject, map, filter, shareReplay, switchMap, tap } from 'rxjs';
 import { ChartModule } from 'primeng/chart';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ChartOptions } from 'chart.js'
 import { DatePipe, DecimalPipe } from '@angular/common';
-
-interface AutoCompleteCompleteEvent {
-  originalEvent: Event;
-  query: string;
-}
+import { DOCUMENT } from '@angular/common';
 
 const periodValues = [{
   id: 'LAST_7_DAYS',
@@ -34,96 +29,14 @@ const byPeriodValues = [{
   id: 'WEEKLY_VIEW',
   name: 'Vue hebdomadaire'
 }]
+const DAY = 1000 * 60 * 60 * 24
 
-const labels = ['Ven', 'Sam', 'Dim', 'Lun', 'Mar', 'Mer', 'Jeu'];
 // const roundedRadius = { topLeft: Number.MAX_VALUE, topRight: Number.MAX_VALUE }
-// const data = {
-//   labels: labels,
-//   datasets: [
-//     {
-//       label: 'Ventes',
-//       barPercentage: .5,
-//       borderRadius: [roundedRadius, roundedRadius, roundedRadius, null, null, roundedRadius, null],
-//       data: [42.15, 30, 25, 30, 35, 26, 19.46],
-//       backgroundColor: '#00D1B2',
-//     },
-//     {
-//       label: 'Ventes pastillées',
-//       barPercentage: .5,
-//       borderRadius: [null, null, null, null, null, null, roundedRadius],
-//       data: [null, null, null, null, null, null, 9.55],
-//       backgroundColor: '#FFE08A',
-//     },
-//     {
-//       label: 'Rupture',
-//       barPercentage: .5,
-//       data: [null, null, null, null, null, null, null],
-//       backgroundColor: '#F14668',
-//     },
-//     {
-//       label: 'Conso cuisine',
-//       barPercentage: .5,
-//       borderRadius: [null, null, null, null, roundedRadius, null, null],
-//       data: [null, null, null, null, 10.45, null, null],
-//       backgroundColor: '#485FC7',
-//     },
-//     {
-//       label: 'Casse',
-//       barPercentage: .5,
-//       borderRadius: [null, null, null, roundedRadius, null, null, null],
-//       data: [null, null, null, 8.55, null, null, null],
-//       backgroundColor: '#B86BFF',
-//     }
-//   ]
-// };
-
-const options: ChartOptions = {
-  animation: false,
-  locale: 'fr-FR',
-  plugins: {
-    title: {
-      display: false,
-      // text: 'Chart.js Bar Chart - Stacked'
-    },
-    legend: {
-      position: 'bottom',
-      labels: {
-        boxWidth: 10,
-        boxHeight: 8,
-        usePointStyle: true,
-        pointStyle: 'circle'
-      }
-    },
-  },
-  responsive: true,
-  scales: {
-    x: {
-      stacked: true,
-      border: {
-        display: false
-      },
-      grid: {
-        display: false
-      }
-    },
-    y: {
-      offsetAfterAutoskip: true,
-      backgroundColor: '#F4F4F4',
-      stacked: true,
-      border: {
-        display: false
-      },
-      grid: {
-        tickBorderDash: [10, 10],
-        tickBorderDashOffset: 10
-      }
-    }
-  }
-};
 
 @Component({
   selector: 'admin-sales',
   templateUrl: 'sales.component.html',
+  styleUrls: ['./sales.component.scss'],
   standalone: true,
   imports: [
     CardModule,
@@ -132,29 +45,26 @@ const options: ChartOptions = {
     DecimalPipe,
     CalendarModule,
     DropdownModule,
-    DropdownModule,
-    // AutoCompleteModule,
     ReactiveFormsModule
   ],
   providers: [SalesApiService, DatePipe],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class SalesComponent {
   #fb = inject(FormBuilder)
   #datePipe = inject(DatePipe)
+  #document = inject(DOCUMENT)
+  #renderer = inject(Renderer2)
   #salesApi = inject(SalesApiService)
 
   #skipPeriodClear = false
-  #productsFilter = signal('')
   #products$ = this.#salesApi.fetchProducts().pipe(shareReplay({ bufferSize: 1, refCount: true }))
-  #products = toSignal(this.#products$)
+  products = toSignal(this.#products$)
 
-  productSuggestions = computed(() => this.#filterByQuery(this.#products(), this.#productsFilter()))
   periodValues = signal(periodValues)
   byPeriodValues = signal(byPeriodValues)
   today = signal(new Date())
-  // chartData = signal(data)
-  chartOptions = signal(options)
   form = this.#fb.group({
     product: this.#fb.control<{ id: string, name: string }>(null),
     dates: this.#fb.control<Date[]>(null),
@@ -165,6 +75,7 @@ export class SalesComponent {
     this.form.valueChanges.pipe(
       tap(data => console.log(data)),
       filter(value => !!value.product && !!value.dates && !!value.dates[0] && !!value.dates[1]),
+      map(value => this.#checkFormRangeForCorrectByPeriod(value)),
       switchMap(({ dates, period, byPeriod }) => this.#salesApi.fetchSales(dates, byPeriod)
         .pipe(
           map(sales => ({ sales, period, byPeriod }))
@@ -180,6 +91,8 @@ export class SalesComponent {
   giftsTotal = computed(() => this.#salesData().sales.reduce((a, b) => a + b.gift, 0))
   consoTotal = computed(() => this.#salesData().sales.reduce((a, b) => a + b.conso, 0))
   trashTotal = computed(() => this.#salesData().sales.reduce((a, b) => a + b.trash, 0))
+
+  breakagesCnt = viewChild<ElementRef>('breakagesCnt');
 
   constructor() {
     const periodCtrl = this.form.controls.period;
@@ -211,13 +124,16 @@ export class SalesComponent {
     })
   }
 
-  searchProducts(event: AutoCompleteCompleteEvent) {
-    this.#productsFilter.set(event.query);
+  #checkFormRangeForCorrectByPeriod(value) {
+    if (value.byPeriod.id === 'WEEKLY_VIEW') return value
+    const diff = (value.dates[1].getTime() - value.dates[0].getTime()) / DAY
+    if (diff <= 20) return value
+    this.form.controls.byPeriod.setValue(byPeriodValues[1], { emitEvent: false })
+    return { ...value, byPeriod: byPeriodValues[1] }
   }
 
   #setFormRangeByPeriod(period): void {
     const max = this.today()
-    const day = 1000 * 60 * 60 * 24
     let days: number
     switch (period.id) {
       case 'LAST_7_DAYS': days = 7; break;
@@ -225,15 +141,9 @@ export class SalesComponent {
       case 'LAST_MONTH': days = 30; break;
       default: return
     }
-    const min = new Date(max.getTime() - days * day)
+    const min = new Date(max.getTime() - days * DAY)
     this.#skipPeriodClear = true
     this.form.controls.dates.setValue([min, max])
-  }
-
-  #filterByQuery(values: { id: string, name: string }[], query: string): { id: string, name: string }[] {
-    return query
-      ? values.filter(({ name }) => name.toLowerCase().includes(query.toLowerCase()))
-      : values
   }
 
   #getDatasetsDataBySales({ sales, byPeriod } = { sales: null, byPeriod: null }) {
@@ -278,4 +188,76 @@ export class SalesComponent {
       ]
     }
   }
+
+  #chartOptions: ChartOptions = {
+    animation: false,
+    locale: 'fr-FR',
+    plugins: {
+      title: {
+        display: false
+      },
+      legend: {
+        position: 'bottom',
+        labels: {
+          boxWidth: 10,
+          boxHeight: 8,
+          usePointStyle: true,
+          pointStyle: 'circle'
+        }
+      },
+    },
+    responsive: true,
+    scales: {
+      x: {
+        stacked: true,
+        border: {
+          display: false
+        },
+        grid: {
+          display: false
+        },
+        afterFit: (axis) => {
+          console.log('afterFit')
+          setTimeout(() => {
+            const cnt = this.breakagesCnt().nativeElement
+            this.#renderer.setProperty(cnt, 'innerHTML', '');
+            const breakageDatasetData = this.#salesData().sales.map(item => item.breakage)
+            const marginLeft = -20
+            const scaleWidth = 34
+            const xPositions = axis.getLabelItems().map(item => item.options.translation[0])
+            if (xPositions.length !== breakageDatasetData.length) return
+            for (const [index, xPos] of xPositions.entries()) {
+              if (breakageDatasetData[index]) {
+                const child = this.#document.createElement('div')
+                child.classList.add('breakage-icon')
+                child.style.left = `${xPos + marginLeft - scaleWidth}px`
+                this.#renderer.appendChild(cnt, child)
+              }
+            }
+            // console.log('afterUpdate', axis.getLabelItems().map(item => item.options.translation[0]), axis)
+          })
+        },
+      },
+      y: {
+        offsetAfterAutoskip: true,
+        backgroundColor: '#F4F4F4',
+        stacked: true,
+        border: {
+          display: false
+        },
+        ticks: {
+          crossAlign: 'center'
+        },
+        grid: {
+          tickBorderDash: [10, 10],
+          tickBorderDashOffset: 10
+        },
+        afterFit: (axe) => {
+          axe.width = 34
+          axe.maxWidth = 34
+        }
+      }
+    }
+  }
+  chartOptions = signal(this.#chartOptions)
 }
