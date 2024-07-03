@@ -5,3 +5,44 @@
   [activeItem]="activeTabItem()"
 />
 <router-outlet />
+<form [formGroup]="form" class="p-card flex flex-column gap-2 p-fluid p-3 h-full">
+  <div class="grid" formArrayName="orders">
+    @for (item of purchaseData(); track dateIndex; let dateIndex = $index) {
+      <div [formGroupName]="dateIndex" class="col flex flex-column">
+        <div class="flex justify-content-between flex-wrap">
+          <div>
+            <div class="has-text-primary-dark text-s">{{ item.date | date : 'd MMMM'}}</div>
+            <div class="uppercase font-semibold">{{ item.date | date : 'E'}}</div>
+          </div>
+          <div class="p-tag has-background-primary-dark">
+            <div class="flex flex-column">
+              <div class="text-base">{{ item.salePrice | currency:'EUR':'symbol':'1.2-2' }}</div>
+              <div class="text-xxs">Prix de vente</div>
+            </div>
+          </div>
+        </div>
+        <div formArrayName="suppliers" class="flex flex-grow-1 flex-column has-background-primary-light p-2 mt-2">
+          @for (supplierData of item.suppliers; track supplierIndex; let supplierIndex = $index) {
+            <div [formGroupName]="supplierIndex" class="p-card flex flex-column gap-1 p-fluid p-3 mb-2">
+              <div class="text-s">{{supplierData.supplier.name}}</div>
+              <div class="text-xs font-semibold">{{supplierData.packaging.name}}</div>
+              <div class="text-xxs has-text-grey">Prix d’achat : {{ supplierData.price | currency:'EUR':'symbol':'1.2-2' }}</div>
+              <p-inputNumber 
+                formControlName="quantity"
+                [showButtons]="true" 
+                buttonLayout="horizontal" 
+                spinnerMode="horizontal"
+                [min]="0"
+                [step]="supplierData.packaging.quantity || 1"
+                decrementButtonClass="p-button-primary-dark"
+                incrementButtonClass="p-button-primary-dark"
+                incrementButtonIcon="pi pi-plus" 
+                decrementButtonIcon="pi pi-minus" 
+                />
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</form>

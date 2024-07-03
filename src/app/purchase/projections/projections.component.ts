@@ -10,6 +10,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ChartOptions } from 'chart.js';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ProjectionsApiService } from './projections-api.service';
+import { PurchaseApiService } from '../purchase-api.service';
 
 const periodValues = [{
   id: 'CURRENT_WEEK',
@@ -86,6 +87,7 @@ export class ProjectionsComponent {
   #fb = inject(FormBuilder)
   #datePipe = inject(DatePipe)
   #productService = inject(ProductService)
+  #purchaseService = inject(PurchaseApiService)
   #projectionsApi = inject(ProjectionsApiService)
 
   #products$ = this.#productService.products$.pipe(shareReplay({ bufferSize: 1, refCount: true }))
@@ -114,7 +116,8 @@ export class ProjectionsComponent {
     ),
     { initialValue: { sales: [], goal: 0 } }
   )
-  datasetsData = computed(() => this.#getDatasetsDataBySales(this.#salesData()))
+  orderingData = this.#purchaseService.productPurchaseDataWithQuantities
+  datasetsData = computed(() => this.#getDatasetsDataBySales({ ...this.#salesData(), ...this.orderingData() }))
   unit = signal('unité')
 
   constructor() {
@@ -125,24 +128,40 @@ export class ProjectionsComponent {
     })
   }
 
-  #getDatasetsDataBySales({ sales, goal } = { sales: null, goal: 0 }) {
-    if (!sales?.length) return
+  #getDatasetsDataBySales({ sales, goal, orders } = { sales: null, goal: 0, orders: null }) {
+    if (!sales?.length || !orders) return
+    console.log(orders)
+    let redundandQuantity = 0
+    const dataWithOrdered = sales.map(item => {
+      const plannedQuantity = this.#getSalesByGoal(item.sales || 0, goal)
+      const dateOrder = orders.find(order => new Date(item.date).toLocaleDateString() === new Date(order.date).toLocaleDateString())
+      const orderedQuantity = (dateOrder?.suppliers || []).reduce((sum, sup) => sum + sup.quantity, 0) + redundandQuantity
+      redundandQuantity = Math.max(0, orderedQuantity - plannedQuantity)
+      const orderedForDate = Math.min(orderedQuantity, plannedQuantity)
+      const plannedDiff = plannedQuantity - orderedForDate
+      return {
+        date: item.date,
+        plannedDiff: item.enabled ? plannedDiff : null,
+        disabledDiff: item.enabled ? null : plannedDiff,
+        orderedQuantity: Math.min(orderedQuantity, plannedQuantity)
+      }
+    })
     return {
-      labels: sales.map(item => this.#datePipe.transform(item.date, 'E'/*, 'GMT', 'fr'*/)),
+      labels: dataWithOrdered.map(item => this.#datePipe.transform(item.date, 'E'/*, 'GMT', 'fr'*/)),
       datasets: [
         {
           barPercentage: .5,
-          data: sales.map(item => null),
+          data: dataWithOrdered.map(item => item.orderedQuantity),
           backgroundColor: '#00D1B2',
         },
         {
           barPercentage: .5,
-          data: sales.map(item => item.enabled ? this.#getSalesByGoal(item.sales, goal) : null),
+          data: dataWithOrdered.map(item => item.plannedDiff),
           backgroundColor: '#EBFFFC',
         },
         {
           barPercentage: .5,
-          data: sales.map(item => item.enabled ? null : this.#getSalesByGoal(item.sales, goal)),
+          data: dataWithOrdered.map(item => item.disabledDiff),
           backgroundColor: '#D9D9D9',
         }
       ]

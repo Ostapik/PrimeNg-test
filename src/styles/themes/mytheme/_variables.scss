@@ -3,6 +3,7 @@ $primaryColor: #00D1B2;
 $primaryDarkColor: #00947E;
 $primaryDarkerColor: #00947E;
 $primaryTextColor: #ffffff;
+$primaryLightColor: #EBFFFC;
 $warningColor: #FFE08A;
 $dangerColor: #F14668;
 $blueColor: #485FC7;
@@ -21,9 +22,11 @@ $colors: (
     "bluegray": $primaryDarkColor,
     "purple": $purpleColor,
     "red": $dangerColor,
+    "grey": #958E8E,
     "danger-light": #FEECF0,
     "primary": $primaryColor,
-    "primary-dark": $primaryDarkColor
+    "primary-dark": $primaryDarkColor,
+    "primary-light": $primaryLightColor
 );
 
 // Mandatory Designer Variables

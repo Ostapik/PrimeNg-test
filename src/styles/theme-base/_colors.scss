@@ -13,6 +13,14 @@
         @for $i from 1 through 4 {
             --#{$name}-#{($i + 5) * 100}:#{shade($color, $i * 15%)};
         }
+
+        .has-background-#{$name} {
+          background-color: $color;
+        }
+
+        .has-text-#{$name} {
+          color: $color;
+        }
     }
   }
 }
