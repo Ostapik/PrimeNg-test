@@ -478,6 +478,10 @@
     }
 }
 
+.p-button.p-button-primary-dark, .p-button-group.p-button-primary-dark > .p-button, .p-splitbutton.p-button-primary-dark > .p-button {
+  background: $primaryDarkColor
+}
+
 .p-button.p-button-danger, .p-button-group.p-button-danger > .p-button, .p-splitbutton.p-button-danger > .p-button {
     color: $dangerButtonTextColor;
     background: $dangerButtonBg;

@@ -4,6 +4,7 @@
       <div class="flex-auto">
         <label class="mb-2 font-bold block" for="product">Produit analysé</label>
         <p-dropdown 
+          id="product"
           [options]="products()"
           optionLabel="name" 
           formControlName="product"
@@ -12,15 +13,25 @@
       </div>
       <div class="flex-auto">
         <label class="mb-2 font-bold block" for="goal">Appliquer un objectif</label>
-        <p-dropdown 
-          [options]="[]" 
+        <p-inputNumber 
+          inputId="goal"
           formControlName="goal"
-          optionLabel="name" />
+          [showButtons]="true" 
+          buttonLayout="horizontal" 
+          spinnerMode="horizontal" 
+          [step]="5"
+          suffix="%"
+          decrementButtonClass="p-button-primary-dark"
+          incrementButtonClass="p-button-primary-dark"
+          incrementButtonIcon="pi pi-plus" 
+          decrementButtonIcon="pi pi-minus" 
+          />
       </div>
       <div class="flex-auto">
         <label class="mb-2 font-bold block" for="model">Prévision des ventes</label>
         <p-dropdown 
-          [options]="[]" 
+          id="model"
+          [options]="periodValues()" 
           formControlName="model"
           optionLabel="name" />
       </div>
@@ -28,10 +39,10 @@
   </form>
   
   <div class="col">
-    <p-card header="Données clefs" class="h-full">
+    <p-card header="Prévisions" class="h-full">
       <div class="grid">
         <div class="col">
-          <!-- <p-chart type="bar" [data]="datasetsData()" [options]="chartOptions()" /> -->
+          <p-chart type="bar" [data]="datasetsData()" [options]="chartOptions()" />
         </div>
 
         <div class="col">

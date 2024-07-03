@@ -73,7 +73,6 @@ export class SalesComponent {
   })
   #salesData = toSignal(
     this.form.valueChanges.pipe(
-      tap(data => console.log(data)),
       filter(value => !!value.product && !!value.dates && !!value.dates[0] && !!value.dates[1]),
       map(value => this.#checkFormRangeForCorrectByPeriod(value)),
       switchMap(({ dates, period, byPeriod }) => this.#salesApi.fetchSales(dates, byPeriod)
