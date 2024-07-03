@@ -438,7 +438,7 @@ export class SalesApiService {
   #getSales = () => {
     const now = new Date()
     const day = 1000 * 60 * 60 * 24
-    const len = 100
+    const len = 300
     return new Array(len).fill(null).map((v, index) => {
       const date = now.getTime() - (len - 1 - index) * day
       return {
@@ -451,38 +451,6 @@ export class SalesApiService {
         weekNumber: this.#getDateWeek(date)
       }
     })
-    return [
-      { date: now.getTime() - 29 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 28 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: Math.random() * 10, trash: null },
-      { date: now.getTime() - 27 * day, sales: Math.random() * 50, gift: null, breakage: true, conso: null, trash: Math.random() * 10 },
-      { date: now.getTime() - 26 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 25 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: Math.random() * 10 },
-      { date: now.getTime() - 24 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 23 * day, sales: null, gift: Math.random() * 10, breakage: false, conso: Math.random() * 10, trash: null },
-      { date: now.getTime() - 22 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: Math.random() * 10, trash: null },
-      { date: now.getTime() - 21 * day, sales: Math.random() * 50, gift: Math.random() * 10, breakage: true, conso: null, trash: null },
-      { date: now.getTime() - 20 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: Math.random() * 10 },
-      { date: now.getTime() - 19 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: Math.random() * 10, trash: Math.random() * 10 },
-      { date: now.getTime() - 18 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 17 * day, sales: Math.random() * 50, gift: null, breakage: true, conso: null, trash: Math.random() * 10 },
-      { date: now.getTime() - 16 * day, sales: Math.random() * 50, gift: Math.random() * 10, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 15 * day, sales: Math.random() * 50, gift: Math.random() * 10, breakage: true, conso: null, trash: null },
-      { date: now.getTime() - 14 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 13 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 12 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: Math.random() * 10, trash: Math.random() * 10 },
-      { date: now.getTime() - 11 * day, sales: Math.random() * 50, gift: Math.random() * 10, breakage: false, conso: null, trash: Math.random() * 10 },
-      { date: now.getTime() - 10 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 9 * day, sales: Math.random() * 50, gift: null, breakage: true, conso: Math.random() * 10, trash: null },
-      { date: now.getTime() - 8 * day, sales: Math.random() * 50, gift: Math.random() * 10, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 7 * day, sales: Math.random() * 50, gift: null, breakage: true, conso: null, trash: null },
-      { date: now.getTime() - 6 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 5 * day, sales: Math.random() * 50, gift: null, breakage: true, conso: null, trash: null },
-      { date: now.getTime() - 4 * day, sales: Math.random() * 50, gift: null, breakage: true, conso: null, trash: null },
-      { date: now.getTime() - 3 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: Math.random() * 10, trash: Math.random() * 10 },
-      { date: now.getTime() - 2 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: null },
-      { date: now.getTime() - 1 * day, sales: Math.random() * 50, gift: null, breakage: false, conso: null, trash: null },
-      { date: now.getTime(), sales: Math.random() * 50, gift: Math.random() * 10, breakage: true, conso: Math.random() * 10, trash: Math.random() * 10 },
-    ].map(val => ({ ...val, weekNumber: this.#getDateWeek(val.date) }))
   }
 
   #getDateWeek(date) {

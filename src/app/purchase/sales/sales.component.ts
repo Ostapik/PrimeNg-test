@@ -3,7 +3,7 @@ import { CardModule } from 'primeng/card';
 import { SalesApiService } from './sales-api.service';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AutoCompleteModule } from 'primeng/autocomplete';
+// import { AutoCompleteModule } from 'primeng/autocomplete';
 import { BehaviorSubject, map, filter, shareReplay, switchMap, tap } from 'rxjs';
 import { ChartModule } from 'primeng/chart';
 import { CalendarModule } from 'primeng/calendar';
@@ -35,49 +35,47 @@ const byPeriodValues = [{
   name: 'Vue hebdomadaire'
 }]
 
-const DATA_COUNT = 7;
-const NUMBER_CFG = { count: DATA_COUNT, min: 0 };
 const labels = ['Ven', 'Sam', 'Dim', 'Lun', 'Mar', 'Mer', 'Jeu'];
-const roundedRadius = { topLeft: Number.MAX_VALUE, topRight: Number.MAX_VALUE }
-const data = {
-  labels: labels,
-  datasets: [
-    {
-      label: 'Ventes',
-      barPercentage: .5,
-      borderRadius: [roundedRadius, roundedRadius, roundedRadius, null, null, roundedRadius, null],
-      data: [42.15, 30, 25, 30, 35, 26, 19.46],
-      backgroundColor: '#00D1B2',
-    },
-    {
-      label: 'Ventes pastillées',
-      barPercentage: .5,
-      borderRadius: [null, null, null, null, null, null, roundedRadius],
-      data: [null, null, null, null, null, null, 9.55],
-      backgroundColor: '#FFE08A',
-    },
-    {
-      label: 'Rupture',
-      barPercentage: .5,
-      data: [null, null, null, null, null, null, null],
-      backgroundColor: '#F14668',
-    },
-    {
-      label: 'Conso cuisine',
-      barPercentage: .5,
-      borderRadius: [null, null, null, null, roundedRadius, null, null],
-      data: [null, null, null, null, 10.45, null, null],
-      backgroundColor: '#485FC7',
-    },
-    {
-      label: 'Casse',
-      barPercentage: .5,
-      borderRadius: [null, null, null, roundedRadius, null, null, null],
-      data: [null, null, null, 8.55, null, null, null],
-      backgroundColor: '#B86BFF',
-    }
-  ]
-};
+// const roundedRadius = { topLeft: Number.MAX_VALUE, topRight: Number.MAX_VALUE }
+// const data = {
+//   labels: labels,
+//   datasets: [
+//     {
+//       label: 'Ventes',
+//       barPercentage: .5,
+//       borderRadius: [roundedRadius, roundedRadius, roundedRadius, null, null, roundedRadius, null],
+//       data: [42.15, 30, 25, 30, 35, 26, 19.46],
+//       backgroundColor: '#00D1B2',
+//     },
+//     {
+//       label: 'Ventes pastillées',
+//       barPercentage: .5,
+//       borderRadius: [null, null, null, null, null, null, roundedRadius],
+//       data: [null, null, null, null, null, null, 9.55],
+//       backgroundColor: '#FFE08A',
+//     },
+//     {
+//       label: 'Rupture',
+//       barPercentage: .5,
+//       data: [null, null, null, null, null, null, null],
+//       backgroundColor: '#F14668',
+//     },
+//     {
+//       label: 'Conso cuisine',
+//       barPercentage: .5,
+//       borderRadius: [null, null, null, null, roundedRadius, null, null],
+//       data: [null, null, null, null, 10.45, null, null],
+//       backgroundColor: '#485FC7',
+//     },
+//     {
+//       label: 'Casse',
+//       barPercentage: .5,
+//       borderRadius: [null, null, null, roundedRadius, null, null, null],
+//       data: [null, null, null, 8.55, null, null, null],
+//       backgroundColor: '#B86BFF',
+//     }
+//   ]
+// };
 
 const options: ChartOptions = {
   animation: false,
@@ -134,7 +132,8 @@ const options: ChartOptions = {
     DecimalPipe,
     CalendarModule,
     DropdownModule,
-    AutoCompleteModule,
+    DropdownModule,
+    // AutoCompleteModule,
     ReactiveFormsModule
   ],
   providers: [SalesApiService, DatePipe],
@@ -154,7 +153,7 @@ export class SalesComponent {
   periodValues = signal(periodValues)
   byPeriodValues = signal(byPeriodValues)
   today = signal(new Date())
-  chartData = signal(data)
+  // chartData = signal(data)
   chartOptions = signal(options)
   form = this.#fb.group({
     product: this.#fb.control<{ id: string, name: string }>(null),
@@ -245,14 +244,14 @@ export class SalesComponent {
         {
           label: 'Ventes',
           barPercentage: .5,
-          borderRadius: sales.map(item => (!item.gift && !item.conso && !item.trash) ? roundedRadius : null),
+          // borderRadius: sales.map(item => (!item.gift && !item.conso && !item.trash) ? roundedRadius : null),
           data: sales.map(item => item.sales),
           backgroundColor: '#00D1B2',
         },
         {
           label: 'Ventes pastillées',
           barPercentage: .5,
-          borderRadius: sales.map(item => (!item.conso && !item.trash) ? roundedRadius : null),
+          // borderRadius: sales.map(item => (!item.conso && !item.trash) ? roundedRadius : null),
           data: sales.map(item => item.gift),
           backgroundColor: '#FFE08A',
         },
@@ -265,14 +264,14 @@ export class SalesComponent {
         {
           label: 'Conso cuisine',
           barPercentage: .5,
-          borderRadius: sales.map(item => (!item.trash) ? roundedRadius : null),
+          // borderRadius: sales.map(item => (!item.trash) ? roundedRadius : null),
           data: sales.map(item => item.conso),
           backgroundColor: '#485FC7',
         },
         {
           label: 'Casse',
           barPercentage: .5,
-          borderRadius: sales.map(_ => roundedRadius),
+          // borderRadius: sales.map(_ => roundedRadius),
           data: sales.map(item => item.trash),
           backgroundColor: '#B86BFF',
         }

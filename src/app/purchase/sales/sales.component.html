@@ -3,13 +3,12 @@
     <div class="p-card flex flex-column gap-2 p-fluid p-3 h-full">
       <div class="flex-auto">
         <label class="mb-2 font-bold block" for="product">Produit analysé</label>
-        <p-autoComplete
-          id="product"
-          field="name"
+        <p-dropdown 
+          [options]="productSuggestions()"
+          optionLabel="name" 
           formControlName="product"
-          (completeMethod)="searchProducts($event)"
-          [suggestions]="productSuggestions()"
-        />
+          [filter]="true"
+          filterBy="name"></p-dropdown>
       </div>
       <div class="flex-auto">
         <label class="mb-2 font-bold block" for="product">Période d’analyse</label>
