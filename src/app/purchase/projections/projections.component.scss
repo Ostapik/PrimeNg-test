@@ -14,7 +14,7 @@
       content: ' ';
       height: 16px;
       width: 20px;
-      background-image: url('/images/truck-availabe.png');
+      background-image: url('/PrimeNg-test/browser/images/truck-availabe.png');
       position: absolute;
       top: 0;
     }
@@ -30,7 +30,7 @@
 
     &.disabled {
       &::after {
-        background-image: url('/images/truck-disabled.png');
+        background-image: url('/PrimeNg-test/browser/images/truck-disabled.png');
       }
   
       &::before {
