@@ -14,7 +14,7 @@
       content: ' ';
       height: 16px;
       width: 20px;
-      background-image: url('/PrimeNg-test/browser/images/truck-availabe.png');
+      background-image: url('/images/truck-availabe.png');
       position: absolute;
       top: 0;
     }
@@ -25,22 +25,28 @@
       top: 20px;
       bottom: 36px;
       margin-left: 10px;
-      border-right: 1px dotted #3850B7;
+      // border-right: 1px dotted #3850B7;
+      background-image: linear-gradient(to bottom, #3850B7 50%, rgba(255, 255, 255, 0) 0%);
+      background-position: left;
+      background-size: 1.5px 5px;
+      background-repeat: repeat-y;
+      width: 1.5px;
     }
 
     &.disabled {
       &::after {
-        background-image: url('/PrimeNg-test/browser/images/truck-disabled.png');
+        background-image: url('/images/truck-disabled.png');
       }
   
       &::before {
-        border-right: 1px dotted #7A7A7A;
+        // border-right: 1px dotted #7A7A7A;
+        background-image: linear-gradient(to bottom, #7A7A7A 50%, rgba(255, 255, 255, 0) 0%);
       }
     }
 
     &.active {
       &::after {
-        background-image: url('/PrimeNg-test/browser/images/truck-active.png');
+        background-image: url('/images/truck-active.png');
       }
     }
   }

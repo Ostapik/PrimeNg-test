@@ -233,7 +233,6 @@ export class SalesComponent {
                 this.#renderer.appendChild(cnt, child)
               }
             }
-            // console.log('afterUpdate', axis.getLabelItems().map(item => item.options.translation[0]), axis)
           })
         },
       },
@@ -242,7 +241,7 @@ export class SalesComponent {
         backgroundColor: '#F4F4F4',
         stacked: true,
         border: {
-          display: false
+          display: false, dash: [4, 4]
         },
         ticks: {
           crossAlign: 'center'

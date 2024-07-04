@@ -189,7 +189,7 @@ export class ProjectionsComponent {
           stacked: true,
           suggestedMax: max * 1.15,
           border: {
-            display: false
+            display: false, dash: [4, 4]
           },
           ticks: {
             crossAlign: 'center'
