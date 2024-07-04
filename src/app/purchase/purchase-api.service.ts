@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { FormBuilder, FormGroup } from "@angular/forms";
-import { Observable, of, shareReplay } from "rxjs";
+import { FormBuilder, FormGroup, ValueChangeEvent } from "@angular/forms";
+import { Observable, filter, map, of, shareReplay } from "rxjs";
 
 @Injectable()
 export class PurchaseApiService {
@@ -13,6 +13,10 @@ export class PurchaseApiService {
     orders: this.#fb.array<FormGroup>([])
   })
   productPurchaseDataWithQuantities = toSignal(this.form.valueChanges)
+  activeDate$ = this.form.events.pipe(
+    filter(evt => evt instanceof ValueChangeEvent),
+    map(evt => evt.source.parent.parent.parent.get('date').value)
+  )
 
   loadData(): void {
     this.#purchaseData.subscribe(data => this.#setFormValueByPurchaseData(data))
@@ -138,5 +142,6 @@ export class PurchaseApiService {
         })
       )
     }
+    
   }
 }

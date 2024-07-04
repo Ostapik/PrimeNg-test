@@ -1,5 +1,5 @@
-import { DOCUMENT, DatePipe, DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, Pipe, PipeTransform, Renderer2, ViewEncapsulation, computed, inject, signal, viewChild } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { ChartModule } from 'primeng/chart';
@@ -38,13 +38,10 @@ const periodValues = [{
     ReactiveFormsModule
   ],
   providers: [DatePipe, ProjectionsApiService],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectionsComponent {
   #fb = inject(FormBuilder)
-  #document = inject(DOCUMENT)
-  #renderer = inject(Renderer2)
   #datePipe = inject(DatePipe)
   #productService = inject(ProductService)
   #purchaseService = inject(PurchaseApiService)
@@ -52,68 +49,6 @@ export class ProjectionsComponent {
 
   #products$ = this.#productService.products$.pipe(shareReplay({ bufferSize: 1, refCount: true }))
   products = toSignal(this.#products$)
-  deliveryCnt = viewChild<ElementRef>('deliveryCnt');
-  chartOptions = signal<ChartOptions>({
-    animation: false,
-    locale: 'fr-FR',
-    plugins: {
-      title: {
-        display: false
-      },
-      legend: {
-        display: false
-      },
-    },
-    responsive: true,
-    scales: {
-      x: {
-        stacked: true,
-        border: {
-          display: false
-        },
-        grid: {
-          display: false
-        },
-        afterFit: (axis) => {
-          console.log('afterFit')
-          setTimeout(() => {
-            const cnt = this.deliveryCnt().nativeElement
-            this.#renderer.setProperty(cnt, 'innerHTML', '');
-            // const breakageDatasetData = this.#salesData().sales.map(item => item.breakage)
-            // const marginLeft = -20
-            const scaleWidth = 34
-            const xPositions = axis.getLabelItems().map(item => item.options.translation[0])
-            for (const [index, xPos] of xPositions.entries()) {
-              const child = this.#document.createElement('div')
-              child.classList.add('delivery-block')
-              if (index > 3) child.classList.add('disabled')
-              child.style.left = `${xPos - scaleWidth}px`
-              this.#renderer.appendChild(cnt, child)
-            }
-          })
-        }
-      },
-      y: {
-        offsetAfterAutoskip: true,
-        backgroundColor: '#F4F4F4',
-        stacked: true,
-        border: {
-          display: false
-        },
-        ticks: {
-          crossAlign: 'center'
-        },
-        grid: {
-          tickBorderDash: [10, 10],
-          tickBorderDashOffset: 10
-        },
-        afterFit: (axe) => {
-          axe.width = 34
-          axe.maxWidth = 34
-        }
-      }
-    }
-  })
   periodValues = signal(periodValues)
 
   form = this.#fb.group({
@@ -137,8 +72,25 @@ export class ProjectionsComponent {
     ),
     { initialValue: { sales: [], goal: 0 } }
   )
-  orderingData = this.#purchaseService.productPurchaseDataWithQuantities
-  datasetsData = computed(() => this.#getDatasetsDataBySales({ ...this.#salesData(), ...this.orderingData() }))
+  #orderingData = this.#purchaseService.productPurchaseDataWithQuantities
+  #chartData = computed(() => {
+    const sales = this.#salesData()
+    return {
+      datasetsData: this.#getDatasetsDataBySales({ ...sales, ...this.#orderingData() }),
+      chartOptions: this.#getChartOptions(sales)
+    }
+  })
+  datasetsData = computed(() => this.#chartData()?.datasetsData)
+  chartOptions = computed(() => this.#chartData()?.chartOptions)
+  #deliveryBlocks = signal([])
+  #activeDate = toSignal(this.#purchaseService.activeDate$)
+  deliveryBlocksWithActive = computed(() => {
+    const activeDt = new Date(this.#activeDate()).toLocaleDateString()
+    return this.#deliveryBlocks().map(block => ({
+      ...block,
+      active: new Date(block.date).toLocaleDateString() === activeDt
+    }))
+  })
   unit = signal('unité')
 
   constructor() {
@@ -186,6 +138,72 @@ export class ProjectionsComponent {
           backgroundColor: '#D9D9D9',
         }
       ]
+    }
+  }
+
+  #getChartOptions({ sales, goal }): ChartOptions {
+    if (!sales?.length) return
+    const max = this.#getSalesByGoal(
+      Math.max(...sales.map(item => item.sales).filter(Boolean)),
+      goal
+    )
+    return {
+      animation: false,
+      locale: 'fr-FR',
+      plugins: {
+        title: {
+          display: false
+        },
+        legend: {
+          display: false
+        },
+      },
+      responsive: true,
+      scales: {
+        x: {
+          stacked: true,
+          border: {
+            display: false
+          },
+          grid: {
+            display: false
+          },
+          afterFit: (axis) => {
+            setTimeout(() => {
+              const scaleWidth = 34
+              const sales = this.#salesData().sales
+              const xPositions = axis.getLabelItems().map(item => item.options.translation[0])
+              this.#deliveryBlocks.set(
+                xPositions.map((xPos, index) => ({
+                  left: xPos - scaleWidth,
+                  disabled: index > 3,
+                  date: sales[index].date
+                }))
+              )
+            })
+          }
+        },
+        y: {
+          offsetAfterAutoskip: true,
+          backgroundColor: '#F4F4F4',
+          stacked: true,
+          suggestedMax: max * 1.15,
+          border: {
+            display: false
+          },
+          ticks: {
+            crossAlign: 'center'
+          },
+          grid: {
+            tickBorderDash: [10, 10],
+            tickBorderDashOffset: 10
+          },
+          afterFit: (axe) => {
+            axe.width = 34
+            axe.maxWidth = 34
+          }
+        }
+      }
     }
   }
 

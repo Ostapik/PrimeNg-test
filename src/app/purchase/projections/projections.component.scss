@@ -1,7 +1,7 @@
 .delivery-info {
   left: 42px;
   right: .5rem;
-  top: 0;
+  top: 22px;
   bottom: 0;
 
   .delivery-block {
@@ -35,6 +35,12 @@
   
       &::before {
         border-right: 1px dotted #7A7A7A;
+      }
+    }
+
+    &.active {
+      &::after {
+        background-image: url('/PrimeNg-test/browser/images/truck-active.png');
       }
     }
   }

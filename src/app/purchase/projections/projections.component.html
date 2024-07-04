@@ -43,8 +43,19 @@
     <p-card header="Prévisions" class="h-full">
       <div class="grid">
         <div class="col relative">
-          <p-chart type="bar" [data]="datasetsData()" [options]="chartOptions()" />
-          <div #deliveryCnt class="delivery-info absolute"></div>
+          @if (chartOptions()) {
+            <p-chart type="bar" [data]="datasetsData()" [options]="chartOptions()" />
+            <div class="delivery-info absolute">
+              @for (deliveryBlock of deliveryBlocksWithActive(); track i; let i = $index) {
+                <div
+                  class="delivery-block"
+                  [style.left]="deliveryBlock.left + 'px'"
+                  [class.disabled]="deliveryBlock.disabled"
+                  [class.active]="deliveryBlock.active"
+                ></div>
+              }
+            </div>
+          }
         </div>
 
         <div class="col">
