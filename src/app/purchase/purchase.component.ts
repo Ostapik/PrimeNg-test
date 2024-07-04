@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, inject, signal } from '@angular/core';
 
 import { MenuItem } from 'primeng/api';
 import { TabMenuModule } from 'primeng/tabmenu';
@@ -21,7 +21,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
     DatePipe
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class PurchaseComponent {
   #purchaseService = inject(PurchaseApiService)

@@ -42,8 +42,9 @@
   <div class="col">
     <p-card header="Prévisions" class="h-full">
       <div class="grid">
-        <div class="col">
+        <div class="col relative">
           <p-chart type="bar" [data]="datasetsData()" [options]="chartOptions()" />
+          <div #deliveryCnt class="delivery-info absolute"></div>
         </div>
 
         <div class="col">

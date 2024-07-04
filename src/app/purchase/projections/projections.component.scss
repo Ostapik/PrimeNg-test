@@ -1,0 +1,41 @@
+.delivery-info {
+  left: 42px;
+  right: .5rem;
+  top: 0;
+  bottom: 0;
+
+  .delivery-block {
+    width: 20px;
+    position: absolute;
+    height: 100%;
+    margin-left: -10px;
+
+    &::after {
+      content: ' ';
+      height: 16px;
+      width: 20px;
+      background-image: url('/images/truck-availabe.png');
+      position: absolute;
+      top: 0;
+    }
+
+    &::before {
+      content: ' ';
+      position: absolute;
+      top: 20px;
+      bottom: 36px;
+      margin-left: 10px;
+      border-right: 1px dotted #3850B7;
+    }
+
+    &.disabled {
+      &::after {
+        background-image: url('/images/truck-disabled.png');
+      }
+  
+      &::before {
+        border-right: 1px dotted #7A7A7A;
+      }
+    }
+  }
+}
